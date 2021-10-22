@@ -80,21 +80,80 @@ def add_to_cart(request, id):
     if request.method == 'POST':
         """
         {
-            "product": 1
+            "product": 1,
+            "store": 1
         }
         """
         product = request.data['product']
+        store = request.data['store']
 
-        if Cart.objects.filter(user=id, product=product):
-            cart = Cart.objects.get(user=id, product=product)
-            cart.quantity += 1
-            cart.save()
+        try:
+            prd_qr = Product.objects.get(id=product)
+            store_qr = Store.objects.get(id=store)
+        except:
+            data = {"error": "Something went wrong!"}
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            str_prd = StoreProduct.objects.get(product=prd_qr, store=store_qr)
+        except StoreProduct.DoesNotExist:
+            data = {"error": "Product({}) does not exist in this store({})!".format(prd_qr, store_qr)}
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
+
+        if str_prd.stock < 1:
+            data = {"error": "Product out of stock!"}
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
         else:
-            cart = Cart()
-            cart.user = User.objects.get(id=id)
-            cart.product = Product.objects.get(id=product)
-            cart.save()
+            if Cart.objects.filter(user=id, product=product, store=store):
+                cart = Cart.objects.get(user=id, product=product, store=store)
+
+                if cart.quantity == str_prd.stock:
+                    data = {"error": "Product stock maximum exceed!"}
+                    return Response(data, status=status.HTTP_403_FORBIDDEN)
+
+                cart.quantity += 1
+                cart.save()
+            else:
+                cart_qr = Cart.objects.filter(user=id).first()
+                print("=============================cart---------", cart_qr)
+                if cart_qr == None or cart_qr.store == store_qr:
+                    cart = Cart()
+                    cart.user = User.objects.get(id=id)
+                    cart.product = prd_qr
+                    cart.store = store_qr
+                    cart.save()
+                else:
+                    data = {"error": "You can't purchase multiple products from multiple stores!"}
+                    return Response(data, status=status.HTTP_403_FORBIDDEN)
 
         srzl = CartSerializer(cart)
         return Response(srzl.data, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
+def checkout(request):
+    if request.method == 'POST':
+        user = request.data['user']
+        cart = Cart.objects.filter(user=user)
+        for cr in cart:
+            order = Order()
+            order.user = cr.user
+            order.product = cr.product
+            order.store = cr.store
+            order.quantity = cr.quantity
+            order.save()
+        cart.delete()
+        # srzl = CartSerializer(cart)
+        data = {"suceess": "success"}
+        return Response(data, status=status.HTTP_201_CREATED)
+    data = {"error": "Something went wrong!"}
+    return Response(data, status=status.HTTP_403_FORBIDDEN)
+    
+@api_view(['GET'])
+def orders(request, id):
+    try:
+        orders = Order.objects.filter(user=id)
+        srzl = OrderSerializer(orders, many=True)
+        return Response(srzl.data, status=status.HTTP_201_CREATED)
+    except:
+        data = {"error": "Something went wrong!"}
+        return Response(data, status=status.HTTP_403_FORBIDDEN)

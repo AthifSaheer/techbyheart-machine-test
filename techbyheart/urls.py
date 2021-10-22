@@ -21,6 +21,8 @@ def api_over_view(request):
             'List subcategories': '/api/v1/subcategories/',
             'List cart': '/api/v1/add/to/cart/<user_id>/',
             'Add to cart': '/api/v1/add/to/cart/<user_id>/',
+            'Checkout the cart': '/api/v1/checkout/',
+            'List orders': '/api/v1/orders/<user_id>/',
         },
         {
             'Store admin':"",

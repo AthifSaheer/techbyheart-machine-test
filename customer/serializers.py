@@ -28,9 +28,23 @@ class SubCategorySerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = '__all__'
 
+class StoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ['name', 'phone_number']
+
 class CartSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    store = StoreSerializer()
     product = ProductSerializer()
     class Meta:
         model = Cart
+        fields = '__all__'
+
+class OrderSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    store = StoreSerializer()
+    product = ProductSerializer()
+    class Meta:
+        model = Order
         fields = '__all__'
