@@ -56,6 +56,8 @@ def superadmin_register(request):
         srzl.save()
 
         user = User.objects.get(username=srzl.data['username'])
+        user.is_staff = True
+        user.save()
         refresh = RefreshToken.for_user(user)
         data = {
             'refresh' : str(refresh),
