@@ -2,12 +2,11 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import *
 from superadmin.models import *
-# THIS CLASSES WILL BE SERIALIZER THE MODELS
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'is_staff']
-
+        fields = ['username', 'email', 'is_staff']
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,4 +26,11 @@ class CategorySerializer(serializers.ModelSerializer):
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
+        fields = '__all__'
+
+class CartSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    product = ProductSerializer()
+    class Meta:
+        model = Cart
         fields = '__all__'

@@ -74,12 +74,10 @@ def add_product(request):
     }
     """
     if request.method == 'POST':
-        # try:
+        try:
             store = request.data['store']
             product = request.data['product']
             stock = request.data['stock']
-
-            print("store===========", store)
 
             store_prd = StoreProduct()
             store_prd.store = Store.objects.get(id=store)
@@ -89,6 +87,6 @@ def add_product(request):
             srzl = StoreProductSerializer(store_prd)
 
             return Response(srzl.data, status=status.HTTP_201_CREATED)
-        # except:
-        #     data = {"error": "Something went wrong!"}
-        #     return Response(data, status=status.HTTP_403_FORBIDDEN)
+        except:
+            data = {"error": "Something went wrong!"}
+            return Response(data, status=status.HTTP_403_FORBIDDEN)

@@ -67,15 +67,34 @@ def subcategories(request):
         
 # @login_required(login_url='login')
 @api_view(['POST', 'GET'])
-def add_to_cart(request):
-    if request.method == 'POST':
-        user = request.data['user']
+def add_to_cart(request, id):
+    if request.method == 'GET':
+        try:
+            cart = Cart.objects.filter(user=id)
+            srzl = CartSerializer(cart, context={'request': request}, many=True)
+            return Response(srzl.data, status=status.HTTP_201_CREATED)
+        except Cart.DoesNotExist:
+            data = {"error": "Something went wrong!"}
+            return Response(data, status=status.HTTP_403_FORBIDDEN)
 
-    try:
-        sub_ctgrs = SubCategory.objects.all()
-        srzl = SubCategorySerializer(sub_ctgrs, context={"request": request}, many=True)
+    if request.method == 'POST':
+        """
+        {
+            "product": 1
+        }
+        """
+        product = request.data['product']
+
+        if Cart.objects.filter(user=id, product=product):
+            cart = Cart.objects.get(user=id, product=product)
+            cart.quantity += 1
+            cart.save()
+        else:
+            cart = Cart()
+            cart.user = User.objects.get(id=id)
+            cart.product = Product.objects.get(id=product)
+            cart.save()
+
+        srzl = CartSerializer(cart)
         return Response(srzl.data, status=status.HTTP_201_CREATED)
-    except SubCategory.DoesNotExist:
-        data = {"error": "Something went wrong!"}
-        return Response(data, status=status.HTTP_403_FORBIDDEN)
-    
+
