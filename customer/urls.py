@@ -4,10 +4,12 @@ from . import views
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 
 urlpatterns = [
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login/', TokenObtainPairView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    # path('list/product/', views.product_list, name="product_list"),
-
-    # path('', views.api_over_view, name="api_over_view"),
     path('register/', views.register, name="register"),
+
+    path('products/', views.products, name="products"),
+    path('categories/', views.categories, name="categories"),
+    path('subcategories/', views.subcategories, name="subcategories"),
+    path('add/to/cart/', views.add_to_cart, name="add_to_cart"),
 ]

@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User, auth
 from rest_framework import status
+from superadmin.models import *
 from .serializers import *
 
 @api_view(['POST'])
@@ -62,3 +63,32 @@ def storeadmin_register(request):
         }
         return Response(data, status=status.HTTP_201_CREATED)
     return Response(status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+def add_product(request):
+    """
+    {
+        "store": 1,
+        "product": 1,
+        "stock": 100
+    }
+    """
+    if request.method == 'POST':
+        # try:
+            store = request.data['store']
+            product = request.data['product']
+            stock = request.data['stock']
+
+            print("store===========", store)
+
+            store_prd = StoreProduct()
+            store_prd.store = Store.objects.get(id=store)
+            store_prd.product = Product.objects.get(id=product)
+            store_prd.stock = stock
+            store_prd.save()
+            srzl = StoreProductSerializer(store_prd)
+
+            return Response(srzl.data, status=status.HTTP_201_CREATED)
+        # except:
+        #     data = {"error": "Something went wrong!"}
+        #     return Response(data, status=status.HTTP_403_FORBIDDEN)
