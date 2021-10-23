@@ -10,6 +10,7 @@ from .serializers import *
 @api_view(['POST'])
 def superadmin_login(request):
     """
+    Post method format.
     {
         "username":"anfus",
         "password":"xzaq1234"
@@ -40,6 +41,7 @@ def superadmin_login(request):
 @api_view(['POST'])
 def superadmin_register(request):
     """
+    Post method format.
     {
         "username" : "athif",
         "email" : "athif@gmail.com",

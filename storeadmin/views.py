@@ -9,6 +9,7 @@ from .serializers import *
 @api_view(['POST'])
 def storeadmin_login(request):
     """
+    Post method format.
     {
         "username" : "shakkir",
         "password" : "xzaq1234"
@@ -38,6 +39,7 @@ def storeadmin_login(request):
 @api_view(['POST'])
 def storeadmin_register(request):
     """
+    Post method format.
     {
         "username" : "shakkir",
         "email" : "shakkir@gmail.com",
@@ -67,6 +69,7 @@ def storeadmin_register(request):
 @api_view(['POST'])
 def add_product(request):
     """
+    Post method format.
     {
         "store": 1,
         "product": 1,

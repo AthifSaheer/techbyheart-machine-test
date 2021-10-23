@@ -11,6 +11,7 @@ from .models import *
 @api_view(['POST'])
 def register(request):
     """
+    Post method format.
     {
         "username" : "athif",
         "email" : "athif@gmail.com",
@@ -79,9 +80,10 @@ def add_to_cart(request, id):
 
     if request.method == 'POST':
         """
+        Post method format.
         {
-            "product": 1,
-            "store": 1
+            "product": <product_id>,
+            "store": <product_id>
         }
         """
         product = request.data['product']
@@ -131,6 +133,13 @@ def add_to_cart(request, id):
 
 @api_view(['POST'])
 def checkout(request):
+    """
+    Post method format.
+    {
+        "username" : "username",
+        "password" : "xzaq1234"
+    }
+    """
     if request.method == 'POST':
         user = request.data['user']
         cart = Cart.objects.filter(user=user)
@@ -142,7 +151,6 @@ def checkout(request):
             order.quantity = cr.quantity
             order.save()
         cart.delete()
-        # srzl = CartSerializer(cart)
         data = {"suceess": "success"}
         return Response(data, status=status.HTTP_201_CREATED)
     data = {"error": "Something went wrong!"}
